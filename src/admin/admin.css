@@ -1,0 +1,146 @@
+.admin-container {
+  display: flex;
+  height: 100vh;
+  background: #f5f6fa;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  padding: 20px;
+}
+
+.sidebar-title {
+  margin-bottom: 30px;
+  font-size: 22px;
+}
+
+.sidebar-menu a {
+  display: block;
+  color: #ddd;
+  text-decoration: none;
+  padding: 10px 0;
+}
+
+.sidebar-menu a.active,
+.sidebar-menu a:hover {
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Content */
+.admin-content {
+  flex: 1;
+  padding: 30px;
+}
+
+.page-title {
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+/* Dashboard Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.stat-card p {
+  color: #777;
+}
+
+.stat-card h3 {
+  font-size: 28px;
+  margin-top: 10px;
+}
+.add-btn {
+  background: #198754;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.data-table {
+  width: 100%;
+  background: #fff;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.data-table th {
+  background: #f8f9fa;
+  text-align: left;
+}
+
+.edit-btn {
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  margin-right: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Modal (Admin pages) */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  z-index: 999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 22px;
+  width: 480px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
