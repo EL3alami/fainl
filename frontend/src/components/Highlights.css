@@ -1,0 +1,157 @@
+.highlights-section {
+  padding: 100px 10%;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.highlights-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.highlight-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 40px 30px;
+  text-align: center;
+  position: relative;
+  border: 2px solid #cbd5e1;
+  /* إطار أسمك وأكثر وضوحاً */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  /* ظل واضح جداً للبروز */
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.highlight-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+  border-color: var(--card-color);
+}
+
+.card-top-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--card-color);
+  opacity: 0.1;
+  transition: opacity 0.3s;
+}
+
+.highlight-card:hover .card-top-accent {
+  opacity: 1;
+}
+
+.icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: #f8fafc;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  position: relative;
+  transition: all 0.5s;
+}
+
+.highlight-card:hover .icon-wrapper {
+  background: var(--card-color);
+  transform: rotate(-10deg) scale(1.1);
+}
+
+.icon-emoji {
+  font-size: 32px;
+  z-index: 2;
+  transition: transform 0.3s;
+}
+
+.highlight-card:hover .icon-emoji {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.icon-glow {
+  position: absolute;
+  inset: -10px;
+  background: var(--card-color);
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: 50%;
+}
+
+.highlight-card:hover .icon-glow {
+  opacity: 0.2;
+}
+
+.highlight-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.highlight-card p {
+  font-size: 15px;
+  color: #64748b;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Decoration inside card */
+.card-footer-blur {
+  position: absolute;
+  bottom: -40px;
+  right: -40px;
+  width: 100px;
+  height: 100px;
+  background: var(--card-color);
+  filter: blur(60px);
+  opacity: 0.05;
+  transition: opacity 0.3s;
+}
+
+.highlight-card:hover .card-footer-blur {
+  opacity: 0.15;
+}
+
+/* Animations */
+.animate-in {
+  animation: cardFadeUp 0.6s ease-out forwards;
+}
+
+@keyframes cardFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1200px) {
+  .highlights-section {
+    padding: 80px 5%;
+  }
+}
+
+@media (max-width: 768px) {
+  .highlights-container {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+}

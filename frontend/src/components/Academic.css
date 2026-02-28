@@ -1,0 +1,269 @@
+.academic-section {
+  padding: 100px 10%;
+  background: #ffffff;
+  text-align: center;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.academic-section h2 {
+  font-size: 42px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.academic-subtitle {
+  color: #64748b;
+  max-width: 800px;
+  margin: 0 auto 60px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* Stats Styling */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-bottom: 80px;
+}
+
+.stat-box {
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-5px);
+}
+
+.stat-box h3 {
+  font-size: 36px;
+  font-weight: 800;
+  color: #4f46e5;
+  margin-bottom: 8px;
+}
+
+.stat-box p {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Departments Grid */
+.programs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+.program-card {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 32px;
+  text-align: left;
+  border: 2px solid #cbd5e1;
+  /* إطار أسمك وأكثر تحديداً */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.program-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.1), 0 10px 10px -5px rgba(79, 70, 229, 0.04);
+  border-color: #4f46e5;
+  transform: translateY(-8px);
+}
+
+.program-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(79, 70, 229, 0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #4f46e5;
+  margin-bottom: 24px;
+  font-weight: 800;
+}
+
+.program-card h4 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.program-card small {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.program-card p {
+  color: #475569;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex-grow: 1;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+
+  /* تحديد عدد الأسطر بـ 4 فقط في الكارت */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.program-card button {
+  margin-top: auto;
+  padding: 14px 24px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 15px;
+}
+
+.program-card button:hover {
+  background: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+}
+
+/* Badge */
+.badge {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: #4f46e5;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-box {
+  background: #ffffff;
+  padding: 40px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  text-align: left;
+  animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+/* Custom scrollbar for better look */
+.modal-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-box::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+.modal-box h3 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background: white;
+  padding-bottom: 10px;
+  z-index: 10;
+}
+
+.modal-desc {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #475569;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.close-btn {
+  width: 100%;
+  padding: 16px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 32px;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: #4338ca;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .academic-section {
+    padding: 60px 5%;
+  }
+
+  .academic-section h2 {
+    font-size: 32px;
+  }
+
+  .programs {
+    grid-template-columns: 1fr;
+  }
+}

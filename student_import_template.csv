@@ -1,0 +1,5 @@
+student_number,national_id,name_en,name_ar,level,dept_code,course_code,semester_year,semester_term,grade
+2024001,1.23457E+13,Ahmed Mohamed,أحمد محمد,1,CS,CS111,2025,fall,85
+2024001,1.23457E+13,Ahmed Mohamed,أحمد محمد,1,CS,CS112,2025,fall,92
+2024002,1.23457E+13,Sara Ali,سارة علي,2,IS,IS212,2025,spring,78
+2024003,1.23457E+13,Khaled Hassan,خالد حسن,3,IT,IT331,2026,fall,65

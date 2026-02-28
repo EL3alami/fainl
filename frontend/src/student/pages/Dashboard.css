@@ -1,0 +1,132 @@
+/* Student Dashboard */
+.stu-dash-wrapper {
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.stu-dash-banner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: white;
+    border-radius: 24px;
+    padding: 30px 36px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+}
+
+.stu-dash-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+}
+
+.stu-dash-greeting {
+    flex: 1;
+}
+
+.stu-dash-greeting h1 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 5px 0;
+    color: #1e293b;
+}
+
+.stu-dash-greeting p {
+    margin: 0;
+    color: #64748b;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.stu-logout-btn {
+    flex-shrink: 0;
+}
+
+/* Stats Row */
+.stu-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stu-stat-pill {
+    background: white;
+    border-radius: 20px;
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s;
+}
+
+.stu-stat-pill:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.stu-stat-icon {
+    font-size: 28px;
+}
+
+.stu-stat-pill div {
+    display: flex;
+    flex-direction: column;
+}
+
+.stu-stat-val {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--clr, #1e293b);
+    line-height: 1;
+}
+
+.stu-stat-lbl {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+
+/* Semester Banner */
+.stu-semester-banner {
+    background: white;
+    border-radius: 14px;
+    padding: 16px 24px;
+    margin-bottom: 28px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 900px) {
+    .stu-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stu-dash-wrapper {
+        padding: 20px;
+    }
+
+    .stu-dash-banner {
+        flex-wrap: wrap;
+    }
+}
