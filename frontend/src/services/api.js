@@ -6,37 +6,57 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 /**
- * دالة مساعدة للـ HTTP requests
+ * دالة مساعدة للـ HTTP requests مع دعم الـ Authentication
  */
 async function request(endpoint, options = {}) {
     const url = `${BASE_URL}${endpoint}`;
+    const token = localStorage.getItem('token');
 
     const config = {
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         credentials: 'include',
         ...options,
     };
 
-    if (options.body && typeof options.body === 'object') {
+    if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
         config.body = JSON.stringify(options.body);
     }
 
-    const response = await fetch(url, config);
-    const data = await response.json();
+    try {
+        const response = await fetch(url, config);
 
-    if (!response.ok) {
-        const message =
-            data?.message ||
-            (data?.errors && Object.values(data.errors).flat()[0]) ||
-            'An unexpected error occurred';
-        throw new Error(message);
+        // التعامل مع انتهاء الصلاحية أو عدم المصادقة
+        if (response.status === 401 && !endpoint.includes('/login')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+            return;
+        }
+
+        let data = {};
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            data = await response.json();
+        }
+
+        if (!response.ok) {
+            const message =
+                data?.message ||
+                (data?.errors && Object.values(data.errors).flat()[0]) ||
+                'An unexpected error occurred';
+            throw new Error(message);
+        }
+
+        return data;
+    } catch (error) {
+        console.error('API Request Error:', error);
+        throw error;
     }
-
-    return data;
 }
 
 // ============================================================
@@ -61,7 +81,7 @@ export const authApi = {
 // Students API
 // ============================================================
 export const studentsApi = {
-    getAll: () => request('/students'),
+    getAll: (params = '') => request(`/students${params ? (params.startsWith('?') ? params : `?${params}`) : ''}`),
     get: (id) => request(`/students/${id}`),
     create: (data) => request('/students', { method: 'POST', body: data }),
     update: (id, data) => request(`/students/${id}`, { method: 'PUT', body: data }),
@@ -101,7 +121,7 @@ export const departmentsApi = {
 // Courses API
 // ============================================================
 export const coursesApi = {
-    getAll: () => request('/courses'),
+    getAll: (params = '') => request(`/courses${params ? (params.startsWith('?') ? params : `?${params}`) : ''}`),
     create: (data) => request('/courses', { method: 'POST', body: data }),
     update: (id, data) => request(`/courses/${id}`, { method: 'PUT', body: data }),
     delete: (id) => request(`/courses/${id}`, { method: 'DELETE' }),
@@ -119,13 +139,44 @@ export const gradesApi = {
     getAll: (params = '') => request(`/grades?${params}`),
     update: (id, data) => request(`/grades/${id}`, { method: 'PUT', body: data }),
     getSemesters: () => semestersApi.getAll(),
-    exportTranscript: (studentId) => `${BASE_URL}/grades/export/${studentId}`,
+    exportTranscript: async (studentId) => {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${BASE_URL}/grades/export/${studentId}`, {
+            headers: {
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            }
+        });
+        if (!res.ok) throw new Error('Failed to download transcript');
+        const blob = await res.blob();
+
+        // Extract filename from header if available
+        let filename = 'Transcript.csv';
+        const disposition = res.headers.get('content-disposition');
+        if (disposition && disposition.indexOf('filename=') !== -1) {
+            const matches = /filename="([^"]+)"/.exec(disposition);
+            if (matches && matches[1]) filename = matches[1];
+        }
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    },
     import: async (file) => {
         const formData = new FormData();
         formData.append('file', file);
+        const token = localStorage.getItem('token');
         const res = await fetch(`${BASE_URL}/grades/import`, {
             method: 'POST',
             credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            },
             body: formData,
         });
         const json = await res.json();
@@ -138,8 +189,13 @@ export const registrationApi = {
     verify: (data) => request('/registration/verify', { method: 'POST', body: data }),
     getAvailable: (studentId) => request(`/registration/available/${studentId}`),
     register: (data) => request('/registration/register', { method: 'POST', body: data }),
+    unregister: (data) => request('/registration/unregister', { method: 'DELETE', body: data }),
     getMyCourses: (studentId) => request(`/registration/my-courses/${studentId}`),
-    getAllRegistrations: (semesterId) => request(`/registration/admin/all/${semesterId}`),
+    getAllRegistrations: (semesterId, level) => request(`/registration/admin/all/${semesterId}${level ? `?level=${level}` : ''}`),
+    exportRegistrations: (params) => {
+        const query = new URLSearchParams(params).toString();
+        return `${BASE_URL}/registration/export?${query}`;
+    }
 };
 
 // ============================================================
@@ -153,10 +209,15 @@ export const newsApi = {
     uploadImage: async (file) => {
         const formData = new FormData();
         formData.append('image', file);
+        const token = localStorage.getItem('token');
         const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
         const res = await fetch(`${BASE}/news/upload-image`, {
             method: 'POST',
             credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            },
             body: formData,
         });
         const json = await res.json();

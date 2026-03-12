@@ -1,8 +1,9 @@
 .academic-section {
   padding: 100px 10%;
-  background: #ffffff;
+  background: #f1f5f9;
+  /* Contrast for white cards */
   text-align: center;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .academic-section h2 {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { professorsApi } from "../../services/api";
-import "../../admin/pages/AdminPages.css";
+import "./ProfessorPages.css";
+import "../ProfessorLayout.css";
 
 export default function MyCourses() {
   const [myCourses, setMyCourses] = useState([]);

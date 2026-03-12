@@ -161,13 +161,13 @@ export default function Students() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [level]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const [studentsData, deptsData] = await Promise.all([
-        studentsApi.getAll(),
+        studentsApi.getAll(level ? `level=${level}` : ''),
         studentsApi.getDepartments()
       ]);
       setStudents(studentsData);

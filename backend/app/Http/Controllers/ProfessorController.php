@@ -270,9 +270,20 @@ class ProfessorController extends Controller
 
         $cgpa = $totalHours > 0 ? ($totalPoints / $totalHours) : 0;
 
+        $newLevel = 1;
+        if ($passedHours >= 105) {
+            $newLevel = 4;
+        } elseif ($passedHours >= 70) {
+            $newLevel = 3;
+        } elseif ($passedHours >= 35) {
+            $newLevel = 2;
+        }
+
         \App\Models\Student::where('id', $studentId)->update([
             'cgpa' => round($cgpa, 3),
-            'total_passed_hrs' => $passedHours
+            'total_passed_hrs' => $passedHours,
+            'level' => $newLevel,
+            'is_first_term' => ($passedHours == 0) ? 1 : 0
         ]);
     }
 }

@@ -82,50 +82,55 @@ function WebsiteHome() {
   );
 }
 
+import PageLoader from "./components/PageLoader";
+
 /* ====== App Routes ====== */
 function App() {
   return (
-    <Routes>
-      {/* Website */}
-      <Route path="/" element={<WebsiteHome />} />
+    <>
+      <PageLoader />
+      <Routes>
+        {/* Website */}
+        <Route path="/" element={<WebsiteHome />} />
 
-      {/* Admin */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="students" element={<Students />} />
-        <Route path="students/:level" element={<Students />} />
-        <Route path="professors" element={<Professors />} />
-        <Route path="departments" element={<Departments />} />
-        <Route path="courses" element={<Courses />} />
-        <Route path="grades" element={<Grades />} />
-        <Route path="course-registration" element={<CourseRegistration />} />
-        <Route path="news" element={<News />} />
-        <Route path="schedules" element={<Schedules />} />
-        <Route path="assignments" element={<Assignments />} />
-        <Route path="settings" element={<Settings />} />
-      </Route>
+        {/* Admin */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="students" element={<Students />} />
+          <Route path="students/:level" element={<Students />} />
+          <Route path="professors" element={<Professors />} />
+          <Route path="departments" element={<Departments />} />
+          <Route path="courses" element={<Courses />} />
+          <Route path="grades" element={<Grades />} />
+          <Route path="course-registration" element={<CourseRegistration />} />
+          <Route path="news" element={<News />} />
+          <Route path="schedules" element={<Schedules />} />
+          <Route path="assignments" element={<Assignments />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
 
-      {/* Student */}
-      <Route path="/student" element={<StudentLayout />}>
-        <Route path="dashboard" element={<StudentDashboard />} />
-        <Route path="courses" element={<StudentCourseRegistration />} />
-        <Route path="grades" element={<MyGrades />} />
-        <Route path="schedule" element={<ClassSchedule />} />
-      </Route>
+        {/* Student */}
+        <Route path="/student" element={<StudentLayout />}>
+          <Route path="dashboard" element={<StudentDashboard />} />
+          <Route path="courses" element={<StudentCourseRegistration />} />
+          <Route path="grades" element={<MyGrades />} />
+          <Route path="schedule" element={<ClassSchedule />} />
+        </Route>
 
-      {/* Professor */}
-      <Route path="/professor" element={<ProfessorLayout />}>
-        <Route path="dashboard" element={<ProfessorDashboard />} />
-        <Route path="courses" element={<MyCourses />} />
-        <Route path="schedule" element={<MySchedule />} />
-        <Route path="supervisor" element={<SupervisorPanel />} />
-        <Route path="department-students" element={<DepartmentStudents />} />
-      </Route>
+        {/* Professor */}
+        <Route path="/professor" element={<ProfessorLayout />}>
+          <Route path="dashboard" element={<ProfessorDashboard />} />
+          <Route path="courses" element={<MyCourses />} />
+          <Route path="schedule" element={<MySchedule />} />
+          <Route path="supervisor" element={<SupervisorPanel />} />
+          <Route path="department-students" element={<DepartmentStudents />} />
+        </Route>
 
-      {/* Auth */}
-      <Route path="/login" element={<Login />} />
-    </Routes>
+        {/* Auth */}
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </>
   );
 }
 

@@ -52,9 +52,9 @@ export function withStudentVerification(WrappedComponent) {
                         boxShadow: "0 20px 50px rgba(0,0,0,0.1)", border: "1px solid #e2e8f0"
                     }}>
                         <div style={{ textAlign: "center", marginBottom: 30 }}>
-                            <div style={{ fontSize: 48, marginBottom: 16 }}>🎓</div>
-                            <h2 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 800, color: "#1e293b" }}>Student Portal</h2>
-                            <p style={{ color: "#64748b", margin: 0 }}>Enter your credentials to access your academic information</p>
+                            <div style={{ fontSize: 32, marginBottom: 16, fontWeight: 1000, color: '#4f46e5' }}>EP</div>
+                            <h2 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 800, color: "#1e293b" }}>Edu_Point Student Portal</h2>
+                            <p style={{ color: "#64748b", margin: 0 }}>Smart Access to Academic Insights</p>
                         </div>
 
                         <form onSubmit={handleVerify}>
@@ -68,12 +68,12 @@ export function withStudentVerification(WrappedComponent) {
                             </div>
                             {error && <div style={{ color: "#ef4444", fontSize: 13, marginBottom: 12, padding: "10px 14px", background: "rgba(239,68,68,0.07)", borderRadius: 10 }}>{error}</div>}
                             <button type="submit" className="btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={loading}>
-                                {loading ? "Verifying..." : "Access Portal"}
+                                {loading ? "Verifying Access..." : "Enter Edu_Point"}
                             </button>
                         </form>
 
                         <p style={{ textAlign: "center", marginTop: 20, fontSize: 12, color: "#94a3b8" }}>
-                            Faculty of Computers & Information · Arish University
+                            Edu_Point Systems · Secure Academic Protocol
                         </p>
                     </div>
                 </div>

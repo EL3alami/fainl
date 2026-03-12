@@ -10,6 +10,8 @@ function CourseRegistrationContent({ studentSession }) {
   const [student, setStudent] = useState(sessionStudent);
 
   const [availableCourses, setAvailableCourses] = useState([]);
+  const [maxHours, setMaxHours] = useState(0);
+  const [termRegisteredHours, setTermRegisteredHours] = useState(0);
   const [myEnrollments, setMyEnrollments] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -20,12 +22,20 @@ function CourseRegistrationContent({ studentSession }) {
   const fetchAcademicData = async () => {
     try {
       setLoading(true);
-      const [available, registered, freshStudent] = await Promise.all([
+      const [availableData, registered, freshStudent] = await Promise.all([
         registrationApi.getAvailable(sessionStudent.id),
         registrationApi.getMyCourses(sessionStudent.id),
         studentsApi.get(sessionStudent.id).catch(() => null)
       ]);
-      setAvailableCourses(available);
+
+      if (availableData && availableData.available) {
+        setAvailableCourses(availableData.available);
+        setMaxHours(availableData.max_hours || 0);
+        setTermRegisteredHours(availableData.registered_hours || 0);
+      } else {
+        setAvailableCourses(Array.isArray(availableData) ? availableData : []);
+      }
+
       setMyEnrollments(registered);
       if (freshStudent) {
         setStudent(freshStudent);
@@ -53,6 +63,27 @@ function CourseRegistrationContent({ studentSession }) {
       fetchAcademicData();
     } catch (err) {
       alert(err.message || "Registration failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUnregister = async (courseId) => {
+    if (!semester) return;
+
+    if (!window.confirm("Are you sure you want to unregister from this course?")) return;
+
+    try {
+      setLoading(true);
+      await registrationApi.unregister({
+        student_id: student.id,
+        course_id: courseId,
+        semester_id: semester.id,
+      });
+      alert("Course unregistered successfully.");
+      fetchAcademicData();
+    } catch (err) {
+      alert(err.message || "Unregistration failed.");
     } finally {
       setLoading(false);
     }
@@ -87,7 +118,7 @@ function CourseRegistrationContent({ studentSession }) {
           <div className="reg-stat-card">
             <span className="label">Registered Hrs</span>
             <span className="value">
-              {myEnrollments.reduce((s, e) => s + (e.course?.credit_hours || 0), 0)}
+              {myEnrollments.reduce((s, e) => s + (e.course?.credit_hours || 0), 0)} / {maxHours > 0 ? maxHours : '?'}
             </span>
           </div>
         </div>
@@ -136,7 +167,7 @@ function CourseRegistrationContent({ studentSession }) {
                     </div>
                     <h3>{course.name_en}</h3>
                     <p className="course-code">{course.code_en}</p>
-                    <div className="course-meta">
+                    <div className="course-meta" style={{ marginBottom: "15px" }}>
                       <span>
                         <strong>Credits:</strong> {course.credit_hours}h
                       </span>
@@ -144,6 +175,13 @@ function CourseRegistrationContent({ studentSession }) {
                         <strong>Level:</strong> {course.level}
                       </span>
                     </div>
+                    {course.professor && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "15px", fontSize: "13px", color: "#64748b" }}>
+                        <div style={{ background: "#eef2ff", color: "#4f46e5", padding: "4px 8px", borderRadius: "8px", fontWeight: "bold" }}>
+                          Prof. {course.professor.name_en || course.professor.name_ar}
+                        </div>
+                      </div>
+                    )}
                     <button
                       className="btn-register-course"
                       onClick={() => handleRegister(course.id)}
@@ -175,9 +213,26 @@ function CourseRegistrationContent({ studentSession }) {
                     <div className="mini-info">
                       <strong>{item.course?.code_en}</strong>
                       <span>{item.course?.name_en}</span>
+                      {item.assigned_professor && (
+                        <div style={{ fontSize: "11px", color: "#4f46e5", fontWeight: "bold", marginTop: "4px" }}>
+                          👨‍🏫 {item.assigned_professor.name_en || item.assigned_professor.name_ar}
+                        </div>
+                      )}
                     </div>
-                    <div className="mini-meta">
-                      {item.course?.credit_hours} Credits
+                    <div className="mini-actions-row">
+                      <div className="mini-meta">
+                        {item.course?.credit_hours} Credits
+                      </div>
+                      <button
+                        className="btn-unregister-mini"
+                        onClick={() => handleUnregister(item.course_id)}
+                        disabled={loading}
+                        title="Unregister Course"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                 ))

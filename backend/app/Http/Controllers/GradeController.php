@@ -40,7 +40,22 @@ class GradeController extends Controller
             });
         }
 
-        return response()->json($query->orderBy('created_at', 'desc')->paginate(20));
+        if ($request->has('level')) {
+            $level = $request->level;
+            $query->whereHas('student', function ($q) use ($level) {
+                $q->where('level', $level);
+            });
+        }
+
+        if ($request->has('department_id')) {
+            $dept = $request->department_id;
+            $query->whereHas('student', function ($q) use ($dept) {
+                $q->where('department_id', $dept);
+            });
+        }
+
+        // Return all matching for the given level/dept wrapped in 'data' for frontend compatibility
+        return response()->json(['data' => $query->orderBy('created_at', 'desc')->get()]);
     }
 
     /**
@@ -139,9 +154,21 @@ class GradeController extends Controller
 
         $cgpa = $totalHours > 0 ? ($totalPoints / $totalHours) : 0;
 
+        // Determine Level based on passed hours
+        $newLevel = 1;
+        if ($passedHours >= 105) {
+            $newLevel = 4;
+        } elseif ($passedHours >= 70) {
+            $newLevel = 3;
+        } elseif ($passedHours >= 35) {
+            $newLevel = 2;
+        }
+
         Student::where('id', $studentId)->update([
             'cgpa' => round($cgpa, 3),
-            'total_passed_hrs' => $passedHours
+            'total_passed_hrs' => $passedHours,
+            'level' => $newLevel,
+            'is_first_term' => ($passedHours == 0) ? 1 : 0
         ]);
     }
     /**

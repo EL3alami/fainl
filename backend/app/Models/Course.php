@@ -16,9 +16,14 @@ class Course extends Model
         'lab_hrs',
         'level',
         'course_type',
-        'department_id'
+        'department_id',
+        'is_available'
     ];
     public $timestamps = false;
+
+    protected $casts = [
+        'is_available' => 'boolean'
+    ];
 
     public function department()
     {

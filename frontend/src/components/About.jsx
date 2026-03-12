@@ -7,12 +7,12 @@ export default function About() {
   return (
     <section className="about-section">
       <div className="about-header">
-        <span className="about-badge">University Excellence</span>
-        <h2>Inside the Faculty of Computers & Information</h2>
+        <span className="about-badge">Platform Excellence</span>
+        <h2>Inside the Edu_Point Smart Ecosystem</h2>
         <p>
-          At Arish University, we are crafting the blueprint for the digital era.
-          Our faculty stands as a beacon of knowledge, bridging the gap between
-          fundamental science and groundbreaking technological application.
+          At Edu_Point, we are crafting the blueprint for the digital era.
+          Our platform stands as a beacon of efficiency, bridging the gap between
+          academic management and groundbreaking technological application.
         </p>
       </div>
 

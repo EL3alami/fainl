@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import { coursesApi, departmentsApi, professorsApi, semestersApi } from "../../services/api";
 import "./AdminPages.css";
 
@@ -25,6 +26,18 @@ const CourseFormModal = ({ editing, formData, setFormData, handleSubmit, setShow
 
         <form onSubmit={handleSubmit}>
           <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="form-group" style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(79, 70, 229, 0.05)', padding: '12px', borderRadius: '12px' }}>
+              <input
+                type="checkbox"
+                id="is_available"
+                style={{ width: '20px', height: '20px' }}
+                checked={formData.is_available}
+                onChange={(e) => setFormData({ ...formData, is_available: e.target.checked })}
+              />
+              <label htmlFor="is_available" style={{ margin: 0, fontWeight: 700, color: '#4f46e5' }}>
+                Available for Registration this semester?
+              </label>
+            </div>
             <div className="form-group">
               <label>Course Name (English)</label>
               <input
@@ -145,6 +158,11 @@ export default function Courses() {
   const [editing, setEditing] = useState(null);
   const [professors, setProfessors] = useState([]);
   const [semesters, setSemesters] = useState([]);
+  const [activeLevel, setActiveLevel] = useState(1);
+  const [activeDept, setActiveDept] = useState("");
+
+  const { selectedSemester } = useOutletContext();
+
   const [assignData, setAssignData] = useState({
     course_id: "",
     professor_id: "",
@@ -162,17 +180,21 @@ export default function Courses() {
     level: 1,
     course_type: "college_mandatory",
     department_id: null,
+    is_available: true,
   });
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedSemester, activeLevel, activeDept]); // fetchData will now use these values
 
   const fetchData = async () => {
     try {
       setLoading(true);
+      let params = `level=${activeLevel}`;
+      if (activeDept) params += `&department_id=${activeDept}`;
+
       const [coursesData, deptsData, profsData, semsData] = await Promise.all([
-        coursesApi.getAll(),
+        coursesApi.getAll(params),
         departmentsApi.getAll(),
         professorsApi.getAll(),
         semestersApi.getAll()
@@ -193,7 +215,8 @@ export default function Courses() {
     setFormData({
       code_ar: "", code_en: "", name_ar: "", name_en: "",
       credit_hours: 3, lecture_hrs: 2, lab_hrs: 2,
-      level: 1, course_type: "college_mandatory", department_id: null
+      level: 1, course_type: "college_mandatory", department_id: null,
+      is_available: true
     });
     setShowForm(true);
   };
@@ -211,6 +234,7 @@ export default function Courses() {
       level: course.level,
       course_type: course.course_type,
       department_id: course.department_id,
+      is_available: course.is_available === 1 || course.is_available === true,
     });
     setShowForm(true);
   };
@@ -230,6 +254,7 @@ export default function Courses() {
       await professorsApi.assignCourse(assignData);
       setShowAssignModal(false);
       alert("Professor assigned successfully!");
+      fetchData(); // Refresh the courses list to fetch the updated assigned_professor
     } catch (err) {
       alert(err.message || "Assignment failed");
     }
@@ -282,15 +307,49 @@ export default function Courses() {
         </div>
       </div>
 
+      <div className="level-tabs-container" style={{ display: 'flex', gap: '10px', marginBottom: '25px', background: '#f1f5f9', padding: '6px', borderRadius: '18px', width: 'fit-content' }}>
+        {[1, 2, 3, 4].map(level => (
+          <button
+            key={level}
+            onClick={() => setActiveLevel(level)}
+            style={{
+              padding: '10px 20px',
+              borderRadius: '14px',
+              border: 'none',
+              fontWeight: '800',
+              cursor: 'pointer',
+              transition: '0.3s',
+              background: activeLevel === parseInt(level) ? 'white' : 'transparent',
+              color: activeLevel === parseInt(level) ? '#4f46e5' : '#64748b',
+              boxShadow: activeLevel === parseInt(level) ? '0 4px 12px rgba(0,0,0,0.05)' : 'none'
+            }}
+          >
+            Level {level}
+          </button>
+        ))}
+      </div>
+
       <div className="data-section">
-        <div className="toolbar">
-          <div className="search-box">
+        <div className="toolbar" style={{ display: 'flex', gap: '20px', marginBottom: '24px' }}>
+          <div className="search-box" style={{ flex: 1 }}>
             <span className="search-icon">🔍</span>
             <input
               placeholder="Search by name or code..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+          </div>
+
+          <div className="dept-filter" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <span style={{ fontWeight: '700', color: '#64748b', fontSize: '13px' }}>Department:</span>
+            <select
+              value={activeDept}
+              onChange={(e) => setActiveDept(e.target.value)}
+              style={{ padding: '10px 15px', borderRadius: '12px', border: '1px solid #e2e8f0', fontWeight: '600', outline: 'none' }}
+            >
+              <option value="">All Departments</option>
+              {departments.map(d => <option key={d.id} value={d.id}>{d.name_en}</option>)}
+            </select>
           </div>
         </div>
 
@@ -299,6 +358,7 @@ export default function Courses() {
             <thead>
               <tr>
                 <th>Code</th>
+                <th>Status</th>
                 <th>Name</th>
                 <th>Hrs / L-P</th>
                 <th>Level</th>
@@ -309,11 +369,29 @@ export default function Courses() {
             </thead>
             <tbody>
               {filteredCourses.map((course) => (
-                <tr key={course.id}>
+                <tr key={course.id} style={{ opacity: course.is_available ? 1 : 0.6 }}>
                   <td><strong>{course.code_en}</strong></td>
+                  <td>
+                    <span className={`status-pill ${course.is_available ? 'active' : 'suspended'}`} style={{
+                      padding: '4px 8px',
+                      borderRadius: '6px',
+                      fontSize: '10px',
+                      fontWeight: 'bold',
+                      background: course.is_available ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                      color: course.is_available ? '#10b981' : '#ef4444',
+                      textTransform: 'uppercase'
+                    }}>
+                      {course.is_available ? 'Available' : 'Stopped'}
+                    </span>
+                  </td>
                   <td>
                     <div>{course.name_en}</div>
                     <small style={{ color: '#999' }}>{course.name_ar}</small>
+                    {course.assigned_professor && (
+                      <div style={{ marginTop: '6px', fontSize: '11px', color: '#4f46e5', background: '#eef2ff', padding: '2px 6px', borderRadius: '4px', display: 'inline-block', fontWeight: 'bold' }}>
+                        👨‍🏫 {course.assigned_professor.name_en || course.assigned_professor.name_ar}
+                      </div>
+                    )}
                   </td>
                   <td>{course.credit_hours}h ({course.lecture_hrs}-{course.lab_hrs})</td>
                   <td>Level {course.level}</td>

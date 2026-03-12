@@ -12,11 +12,11 @@ export default function Hero() {
           <h1>
             Shape Your Future at
             <br />
-            <span>Faculty of Computers and Information</span>
+            <span style={{ color: '#818cf8', fontWeight: '1000' }}>Edu_Point</span>
           </h1>
 
           <p>
-            The official Student Information System (SIS) for Arish University.
+            The official Smart Academic Platform for progressive learning.
             Empowering students and faculty with modern tools for innovation and academic excellence.
           </p>
 

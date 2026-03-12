@@ -11,10 +11,36 @@ class CourseController extends Controller
     /**
      * Display a listing of the courses.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // We load the department name with the course
-        return response()->json(Course::with('department')->get());
+        // Get active semester
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+        $assignments = [];
+
+        if ($activeSemester) {
+            $assignments = \App\Models\CourseAssignment::where('semester_id', $activeSemester->id)
+                ->with('professor')
+                ->get()
+                ->keyBy('course_id');
+        }
+
+        $query = Course::with('department');
+
+        if ($request->has('level')) {
+            $query->where('level', $request->level);
+        }
+
+        if ($request->has('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        $courses = $query->get();
+
+        foreach ($courses as $course) {
+            $course->assigned_professor = isset($assignments[$course->id]) ? $assignments[$course->id]->professor : null;
+        }
+
+        return response()->json($courses);
     }
 
     /**
@@ -33,6 +59,7 @@ class CourseController extends Controller
             'level' => 'required|integer|min:1|max:4',
             'course_type' => 'required|in:general_mandatory,general_elective,college_mandatory,college_elective,dept_mandatory,dept_elective,project,training,remedial',
             'department_id' => 'nullable|exists:departments,id',
+            'is_available' => 'nullable|boolean',
         ]);
 
         $course = Course::create($validated);
@@ -66,6 +93,7 @@ class CourseController extends Controller
             'level' => 'required|integer|min:1|max:4',
             'course_type' => 'required|in:general_mandatory,general_elective,college_mandatory,college_elective,dept_mandatory,dept_elective,project,training,remedial',
             'department_id' => 'nullable|exists:departments,id',
+            'is_available' => 'nullable|boolean',
         ]);
 
         $course->update($validated);

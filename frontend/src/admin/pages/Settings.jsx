@@ -3,12 +3,12 @@ import "./AdminPages.css";
 
 export default function Settings() {
   const [settings, setSettings] = useState({
-    universityName: "Faculty of Computers & Information – Arish University",
-    shortName: "FCI Arish",
+    universityName: "Edu_Point Smart Academic Platform",
+    shortName: "Edu_Point",
     logo: "",
-    email: "info@fci-arish.edu.eg",
+    email: "info@edupoint.io",
     phone: "+20 100 000 0000",
-    address: "Arish, North Sinai, Egypt",
+    address: "Edu_Point Digital Campus",
     facebook: "",
     twitter: "",
     linkedin: "",

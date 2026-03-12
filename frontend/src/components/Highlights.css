@@ -1,6 +1,7 @@
 .highlights-section {
   padding: 100px 10%;
-  background: #ffffff;
+  background: #f1f5f9;
+  /* Better contrast for white cards */
   position: relative;
   overflow: hidden;
 }

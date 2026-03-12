@@ -26,9 +26,16 @@ class ScheduleController extends Controller
         // 1. Clear current schedules for active semester
         Schedule::where('semester_id', $activeSemester->id)->delete();
 
-        // 2. Get all assignments for the active semester with course details
+        // 2. Get courses actually registered by students this term
+        $registeredCourseIds = \App\Models\Enrollment::where('semester_id', $activeSemester->id)
+            ->pluck('course_id')
+            ->unique()
+            ->toArray();
+
+        // 3. Get assignments for the active semester, filtered by registered courses
         $assignments = CourseAssignment::join('courses', 'course_assignments.course_id', '=', 'courses.id')
             ->where('course_assignments.semester_id', $activeSemester->id)
+            ->whereIn('course_assignments.course_id', $registeredCourseIds)
             ->select('course_assignments.*', 'courses.level', 'courses.department_id as course_dept')
             ->orderBy('courses.level')
             ->get();
@@ -44,51 +51,62 @@ class ScheduleController extends Controller
 
         $generated = 0;
 
-        // Track occupancy: [day][slot_index][room] = true
+        // Tracks to avoid conflicts
         $roomOccupancy = [];
-        // Track level constraints: [day][slot_index][level] = true
         $levelOccupancy = [];
+        $profOccupancy = []; // Avoid double booking the same professor
 
         foreach ($assignments as $assignment) {
             $assigned = false;
 
-            // Try to find a valid slot
             for ($d = 0; $d < count($days); $d++) {
                 for ($s = 0; $s < count($slots); $s++) {
                     $level = $assignment->level ?? 1;
+                    $prof = $assignment->professor_id;
+                    $dayStr = $days[$d];
 
-                    // Check if this level is already busy at this time
-                    if (isset($levelOccupancy[$days[$d]][$s][$level]))
+                    // Check if Level is busy
+                    if (isset($levelOccupancy[$dayStr][$s][$level]))
                         continue;
 
-                    // Try to find an empty room
+                    // Check if Professor is busy
+                    if ($prof && isset($profOccupancy[$dayStr][$s][$prof]))
+                        continue;
+
+                    // Find an empty room
                     foreach ($rooms as $room) {
-                        if (!isset($roomOccupancy[$days[$d]][$s][$room])) {
-                            // Found a spot!
+                        if (!isset($roomOccupancy[$dayStr][$s][$room])) {
+                            // Assign!
                             Schedule::create([
                                 'course_id' => $assignment->course_id,
-                                'professor_id' => $assignment->professor_id,
+                                'professor_id' => $prof,
                                 'semester_id' => $activeSemester->id,
-                                'day' => $days[$d],
+                                'day' => $dayStr,
                                 'start_time' => $slots[$s][0],
                                 'end_time' => $slots[$s][1],
                                 'room' => $room,
                                 'type' => 'lecture'
                             ]);
 
-                            $roomOccupancy[$days[$d]][$s][$room] = true;
-                            $levelOccupancy[$days[$d]][$s][$level] = true;
+                            $roomOccupancy[$dayStr][$s][$room] = true;
+                            $levelOccupancy[$dayStr][$s][$level] = true;
+                            if ($prof) {
+                                $profOccupancy[$dayStr][$s][$prof] = true;
+                            }
+
                             $generated++;
                             $assigned = true;
-                            break 2; // Break slot and room loops
+                            break 2; // Break out of room & slot loops
                         }
                     }
                 }
+                if ($assigned)
+                    break; // Break out of day loop
             }
         }
 
         return response()->json([
-            'message' => "Successfully generated $generated schedules. Level conflicts and room overlaps were avoided.",
+            'message' => "Successfully generated $generated schedules for registered courses. Conflicts (Rooms, Level, Professor) were avoided.",
             'schedules' => Schedule::with(['course', 'professor', 'semester'])->where('semester_id', $activeSemester->id)->get()
         ]);
     }

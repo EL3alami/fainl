@@ -1,115 +1,115 @@
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import {
+  LayoutDashboard,
+  Users,
+  Building2,
+  BookOpen,
+  GraduationCap,
+  FileCheck,
+  Newspaper,
+  Calendar,
+  Link as LinkIcon,
+  Settings,
+  ChevronDown,
+  LogOut,
+  RefreshCw,
+  Clock
+} from "lucide-react";
 
 const menuItems = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: "📊" },
-  { to: "/admin/professors", label: "Professors", icon: "👨‍🏫" },
-  { to: "/admin/departments", label: "Departments", icon: "🏛️" },
-  { to: "/admin/courses", label: "Courses", icon: "📚" },
-  { to: "/admin/grades", label: "Grades", icon: "📝" },
-  { to: "/admin/course-registration", label: "Registration", icon: "🗓️" },
-  { to: "/admin/news", label: "News", icon: "📰" },
-  { to: "/admin/schedules", label: "Schedules", icon: "📅" },
-  { to: "/admin/assignments", label: "Assignments", icon: "🔗" },
-  { to: "/admin/settings", label: "Settings", icon: "⚙️" },
+  { to: "/admin/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { to: "/admin/professors", label: "Professors", Icon: GraduationCap },
+  { to: "/admin/departments", label: "Departments", Icon: Building2 },
+  { to: "/admin/courses", label: "Courses", Icon: BookOpen },
+  { to: "/admin/grades", label: "Grades", Icon: FileCheck },
+  { to: "/admin/course-registration", label: "Registration", Icon: Calendar },
+  { to: "/admin/news", label: "News", Icon: Newspaper },
+  { to: "/admin/schedules", label: "Schedules", Icon: Clock },
+  { to: "/admin/assignments", label: "Assignments", Icon: LinkIcon },
+  { to: "/admin/settings", label: "Settings", Icon: Settings },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ currentSemester, onChangeSemester, onLogout }) {
+  const location = useLocation();
   const isStudentsActive = location.pathname.includes("/admin/students");
-
-  // Initialize showLevels based on path, but don't force it in a useEffect so user can toggle it
   const [showLevels, setShowLevels] = useState(isStudentsActive);
 
-  const handleToggle = (e) => {
-    // If they click the text/icon, we want to both navigate AND toggle if it's currently closed
-    // If they click the arrow specifically, we just toggle.
-    setShowLevels(!showLevels);
-  };
-
   return (
-    <aside className="sidebar">
-      <h2 className="sidebar-title">
-        🎓 SIS Portal
-      </h2>
+    <aside className="sidebar-v3">
+      {/* Brand Section */}
+      <div className="sidebar-brand-v3">
+        <div className="brand-logo-small">EP</div>
+        <div className="brand-hq">
+          <h2 className="brand-name-v3">Edu_Point</h2>
+          <span className="brand-tag-v3">SYSTEM ADMIN</span>
+        </div>
+      </div>
 
-      <nav className="sidebar-menu">
-        {/* Students with active link and toggle */}
-        <div style={{ position: "relative" }}>
-          <NavLink
-            to="/admin/students"
-            className={({ isActive }) => (isActive || isStudentsActive ? "active" : "")}
-            onClick={handleToggle}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              textDecoration: "none"
-            }}
+      {/* Working Context Section */}
+      {currentSemester && (
+        <div className="context-card-v3 animate-in" onClick={onChangeSemester}>
+          <div className="context-icon-v3 bg-indigo-500/10 text-indigo-400">
+            <Calendar size={18} />
+          </div>
+          <div className="context-info-v3">
+            <p className="context-label-v3">Working Session</p>
+            <h4 className="context-value-v3">{currentSemester.year} · {currentSemester.term}</h4>
+          </div>
+          <RefreshCw size={14} className="context-refresh-v3" />
+        </div>
+      )}
+
+      {/* Main Navigation */}
+      <nav className="sidebar-nav-scroll">
+        <p className="nav-group-label">Core Management</p>
+
+        {/* Students Accordion */}
+        <div className={`nav-accordion ${isStudentsActive ? "expanded" : ""}`}>
+          <div
+            className={`nav-link-v3 ${isStudentsActive ? "active" : ""}`}
+            onClick={() => setShowLevels(!showLevels)}
           >
-            <span>🎓</span> Students
-            <span
-              style={{
-                marginLeft: "auto",
-                padding: "2px 5px",
-                fontSize: "10px",
-                opacity: 0.8
-              }}
-            >
-              {showLevels ? "▲" : "▼"}
-            </span>
-          </NavLink>
+            <Users size={18} className="link-icon-v3" />
+            <span className="link-txt-v3">Students</span>
+            <ChevronDown size={16} className={`chevron-v3 ${showLevels ? "rotate" : ""}`} />
+          </div>
 
-          {showLevels && (
-            <div className="sidebar-submenu animate-in" style={{
-              paddingLeft: 25,
-              marginTop: 4,
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              background: "rgba(0,0,0,0.2)",
-              borderRadius: "8px",
-              paddingBottom: "8px"
-            }}>
-              {[1, 2, 3, 4].map((lvl) => (
-                <NavLink
-                  key={lvl}
-                  to={`/admin/students/${lvl}`}
-                  className={({ isActive }) => (isActive ? "sub-active" : "")}
-                  style={({ isActive }) => ({
-                    fontSize: "13px",
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    color: isActive ? "#fff" : "#94a3b8",
-                    textDecoration: "none",
-                    transition: "all 0.2s",
-                    display: "block",
-                    background: isActive ? "rgba(255,255,255,0.1)" : "transparent"
-                  })}
-                >
-                  └ Level {lvl}
-                </NavLink>
-              ))}
-            </div>
-          )}
+          <div className={`nav-submenu-v3 ${showLevels || isStudentsActive ? "open" : ""}`}>
+            {[1, 2, 3, 4].map((lvl) => (
+              <NavLink
+                key={lvl}
+                to={`/admin/students/${lvl}`}
+                className={({ isActive }) => `submenu-link-v3 ${isActive ? "active" : ""}`}
+              >
+                <div className="dot-line"></div>
+                Level {lvl}
+              </NavLink>
+            ))}
+          </div>
         </div>
 
-        {/* Other menu items */}
-        {menuItems.map((item) => (
-          <NavLink key={item.to} to={item.to}>
-            <span>{item.icon}</span>
-            {item.label}
+        {/* Dynamic Menu Items */}
+        {menuItems.map(({ to, label, Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) => `nav-link-v3 ${isActive ? "active" : ""}`}
+          >
+            <Icon size={18} className="link-icon-v3" />
+            <span className="link-txt-v3">{label}</span>
           </NavLink>
         ))}
+
+        <div className="nav-footer-spacer"></div>
       </nav>
 
-      <div style={{
-        padding: "16px 20px",
-        borderTop: "1px solid rgba(255,255,255,0.07)",
-        fontSize: 12,
-        color: "#475569",
-        textAlign: "center",
-      }}>
-        FCI · Arish University © 2025
+      {/* Bottom Actions */}
+      <div className="sidebar-footer-v3">
+        <button className="logout-btn-v3" onClick={onLogout}>
+          <LogOut size={18} />
+          <span>Sign Out Control</span>
+        </button>
       </div>
     </aside>
   );

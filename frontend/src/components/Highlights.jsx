@@ -5,7 +5,7 @@ export default function DashboardHighlights() {
   const highlights = [
     {
       icon: "🛡️",
-      title: "SIS Admin Suite",
+      title: "Edu_Point Admin Suite",
       desc: "Full administrative control over faculty records, department structures, and system configurations with advanced management tools.",
       color: "#4f46e5"
     },
@@ -23,7 +23,7 @@ export default function DashboardHighlights() {
     },
     {
       icon: "🔄",
-      title: "Unified SIS Ecosystem",
+      title: "Unified Edu_Point Ecosystem",
       desc: "A singular, high-performance platform connecting administration, faculty, and students for a frictionless academic experience.",
       color: "#ef4444"
     }

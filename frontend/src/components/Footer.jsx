@@ -11,9 +11,9 @@ export default function Footer() {
         <div className="footer-col">
           <h3>Who We Are</h3>
           <ul>
-            <li><a href="#">About the University</a></li>
-              <li><a href="#">Arish University</a></li>
-            <li><a href="#">Faculty of Computers & Information</a></li>
+            <li><a href="#">About the Platform</a></li>
+            <li><a href="#">Edu_Point Smart Systems</a></li>
+            <li><a href="#">Innovation Lab</a></li>
             <li><a href="#">Complaints & Suggestions</a></li>
             <li><a href="#">Your Opinion</a></li>
             <li><a href="#">Contact Us</a></li>
@@ -25,9 +25,9 @@ export default function Footer() {
           <h3>Your Links</h3>
           <ul>
             <li><a href="#">Site Map</a></li>
-            <li><a href="#">Egyptian Universities</a></li>
+            <li><a href="#">Global Universities</a></li>
             <li><a href="#">Research Academy</a></li>
-            <li><a href="#">Egypt Knowledge Bank</a></li>
+            <li><a href="#">Smart Knowledge Bank</a></li>
           </ul>
         </div>
 
@@ -36,13 +36,13 @@ export default function Footer() {
           <h3>Contact Us</h3>
           <ul>
             <li>📞 2-26831474+</li>
-            <li>📧 ums.support@cis.asu.edu.eg</li>
+            <li>📧 support@edupoint.io</li>
           </ul>
         </div>
 
         {/* Logo + Social */}
         <div className="footer-col footer-logo">
-          <img src={Logo} alt="UMS Logo" />
+          <img src={Logo} alt="Edu_Point Logo" />
           <div className="social-icons">
             <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
               <i className="fa-brands fa-facebook-f"></i>
@@ -62,7 +62,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        FCI-Al-Arish 2020 - 2025 ©
+        Edu_Point Academic Network 2025 ©
       </div>
     </footer>
   );

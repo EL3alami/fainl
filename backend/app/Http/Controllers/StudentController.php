@@ -11,9 +11,19 @@ use Illuminate\Support\Facades\DB;
 class StudentController extends Controller
 {
     // عرض كل الطلاب
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Student::with(['department', 'user'])->get());
+        $query = Student::with(['department', 'user']);
+
+        if ($request->has('level')) {
+            $query->where('level', $request->level);
+        }
+
+        if ($request->has('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        return response()->json($query->get());
     }
 
     // عرض طالب محدد

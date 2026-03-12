@@ -22,12 +22,13 @@ export default function Login() {
       const data = await authApi.login(username.trim(), password);
 
       if (data.success) {
-        // حفظ بيانات المستخدم في localStorage
+        // حفظ بيانات المستخدم والـ Token في localStorage
+        localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('role', data.user.role);
 
-        // التوجيه بناءً على الـ role
-        navigate(data.redirect_path);
+        // التوجيه بناءً على الـ role مع إرسال حالة "تم الدخول من اللوجين"
+        navigate(data.redirect_path, { state: { fromLogin: true } });
       }
     } catch (err) {
       setError(err.message || 'اسم المستخدم أو كلمة المرور غير صحيحة.');
@@ -48,11 +49,11 @@ export default function Login() {
         <div className="login-panel-left">
           <div className="login-panel-left-inner">
             <div className="login-logo-wrap">
-              <GraduationCap size={48} className="login-logo-icon" />
+              <span style={{ fontSize: '32px', fontWeight: '1000', color: 'white' }}>EP</span>
             </div>
-            <h1 className="login-university-name">FCI Arish</h1>
-            <p className="login-university-sub">Faculty of Computers &amp; Information</p>
-            <p className="login-university-sub">Port Said University — Arish Branch</p>
+            <h1 className="login-university-name">Edu_Point</h1>
+            <p className="login-university-sub">Unified Academic Operating System</p>
+            <p className="login-university-sub">Smart Learning Environment</p>
 
             <ul className="login-feature-list">
               <li><span className="login-feature-dot" />Student Portal Access</li>
@@ -149,7 +150,7 @@ export default function Login() {
 
             <p className="login-help">
               Need help?&nbsp;
-              <a href="mailto:support@fci.edu.eg" className="login-help-link">Contact Support</a>
+              <a href="mailto:support@edupoint.io" className="login-help-link">Contact Support</a>
             </p>
           </div>
         </div>

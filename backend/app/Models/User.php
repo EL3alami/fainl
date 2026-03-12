@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-
-    public $timestamps = false; // تعطيل التوقيت التلقائي لأن الجدول لا يحتوي على updated_at
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'users';
+    public $timestamps = false;
 
     protected $fillable = [
         'username',
@@ -21,6 +21,7 @@ class User extends Authenticatable
         'student_id',
         'professor_id',
         'is_active',
+        'last_login'
     ];
 
     protected $hidden = [
@@ -28,29 +29,19 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // Laravel يستخدم 'password' افتراضياً — نخبره باسم العمود الحقيقي
-    public function getAuthPassword(): string
+    // Since we use 'password_hash' instead of 'password'
+    public function getAuthPassword()
     {
         return $this->password_hash;
     }
 
+    // New format for casts (Laravel 11+)
     protected function casts(): array
     {
         return [
             'password_hash' => 'hashed',
             'is_active' => 'boolean',
+            'last_login' => 'datetime',
         ];
-    }
-
-    // علاقة مع جدول الطلاب (بدون import مباشر لتفادي لأن Model غير منشأة بعد)
-    public function student()
-    {
-        return $this->belongsTo(\App\Models\Student::class, 'student_id');
-    }
-
-    // علاقة مع جدول الأساتذة
-    public function professor()
-    {
-        return $this->belongsTo(\App\Models\Professor::class, 'professor_id');
     }
 }

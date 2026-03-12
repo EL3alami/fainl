@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -15,28 +16,41 @@ class AuthController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
+        // Try to get data from any source
+        $username = $request->input('username') ?? $request->json('username');
+        $password = $request->input('password') ?? $request->json('password');
+
+        if (!$username || !$password) {
+            return response()->json([
+                'success' => false,
+                'message' => 'اسم المستخدم وكلمة المرور مطلوبة.',
+                'debug_received' => $request->all()
+            ], 422);
+        }
+
         try {
-            // 1. التحقق من صحة البيانات
-            $validated = $request->validate([
-                'username' => 'required|string|max:100',
-                'password' => 'required|string',
-            ]);
+            // Find user
+            $user = User::where('username', $username)->first();
 
-            // 2. البحث عن المستخدم
-            $user = DB::table('users')
-                ->where('username', $validated['username'])
-                ->where('is_active', true)
-                ->first();
-
-            // 3. التحقق من كلمة السر
-            if (!$user || !Hash::check($validated['password'], $user->password_hash)) {
+            // Verify
+            if (!$user || !Hash::check($password, $user->password_hash)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'اسم المستخدم أو كلمة المرور غير صحيحة.',
+                    'message' => 'بيانات الدخول غير صحيحة التجربة.',
                 ], 401);
             }
 
-            // 4. تحديد مسار التوجيه
+            if (!$user->is_active) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'هذا الحساب معطل حالياً.',
+                ], 403);
+            }
+
+            // Create Token
+            $token = $user->createToken('edu_point_token')->plainTextToken;
+
+            // Redirect & Info
             $redirectPath = match ($user->role) {
                 'admin' => '/admin/dashboard',
                 'professor' => '/professor/dashboard',
@@ -44,31 +58,19 @@ class AuthController extends Controller
                 default => '/',
             };
 
-            // 5. جلب بيانات إضافية
             $extraInfo = null;
-
             if ($user->role === 'student' && $user->student_id) {
-                $extraInfo = DB::table('students')
-                    ->select('id', 'student_number', 'name_ar', 'name_en', 'level', 'cgpa', 'department_id')
-                    ->where('id', $user->student_id)
-                    ->first();
+                $extraInfo = DB::table('students')->where('id', $user->student_id)->first();
+            } elseif ($user->role === 'professor' && $user->professor_id) {
+                $extraInfo = DB::table('professors')->where('id', $user->professor_id)->first();
             }
 
-            if ($user->role === 'professor' && $user->professor_id) {
-                $extraInfo = DB::table('professors')
-                    ->select('id', 'name_ar', 'name_en', 'email', 'title', 'department_id')
-                    ->where('id', $user->professor_id)
-                    ->first();
-            }
+            // Update Login Time
+            $user->update(['last_login' => now()]);
 
-            // 6. تحديث آخر تسجيل دخول
-            DB::table('users')
-                ->where('id', $user->id)
-                ->update(['last_login' => now()]);
-
-            // 7. الرد بالنجاح
             return response()->json([
                 'success' => true,
+                'token' => $token,
                 'role' => $user->role,
                 'redirect_path' => $redirectPath,
                 'user' => [
@@ -79,21 +81,41 @@ class AuthController extends Controller
                 ],
             ]);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => collect($e->errors())->flatten()->first(),
-            ], 422);
-
         } catch (\Exception $e) {
-            Log::error('Login error: ' . $e->getMessage());
-
+            Log::error('Login Critical Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'حدث خطأ في الخادم. تأكد من تشغيل قاعدة البيانات.',
-                'debug' => config('app.debug') ? $e->getMessage() : null,
+                'message' => 'خطأ في النظام: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * GET /api/me
+     */
+    public function me(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'No session'], 401);
+        }
+
+        $extraInfo = null;
+        if ($user->role === 'student' && $user->student_id) {
+            $extraInfo = DB::table('students')->where('id', $user->student_id)->first();
+        } elseif ($user->role === 'professor' && $user->professor_id) {
+            $extraInfo = DB::table('professors')->where('id', $user->professor_id)->first();
+        }
+
+        return response()->json([
+            'success' => true,
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'role' => $user->role,
+                'info' => $extraInfo,
+            ],
+        ]);
     }
 
     /**
@@ -101,6 +123,10 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'تم تسجيل الخروج بنجاح',
@@ -108,14 +134,13 @@ class AuthController extends Controller
     }
 
     /**
-     * GET /api/ping — للتأكد من أن الـ API يعمل
+     * GET /api/ping — Utility
      */
     public function ping(): JsonResponse
     {
         return response()->json([
             'status' => 'ok',
-            'message' => 'FCI Arish API is running 🎓',
-            'db' => DB::connection()->getDatabaseName(),
+            'message' => 'Edu_Point API is clinical 🎓',
             'time' => now()->toDateTimeString(),
         ]);
     }

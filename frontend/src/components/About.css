@@ -1,6 +1,7 @@
 .about-section {
   padding: 120px 10%;
-  background-color: #ffffff;
+  background-color: #f8fafc;
+  /* Subtle contrast */
   position: relative;
   overflow: hidden;
 }
